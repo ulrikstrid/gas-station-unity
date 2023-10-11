@@ -1,0 +1,8 @@
+# metadata folders
+.devenv
+.direnv
+.ligo
+
+# Artefacts
+*.json
+*.tz
