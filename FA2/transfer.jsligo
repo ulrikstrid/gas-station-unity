@@ -103,7 +103,7 @@ export const marketplace_buy = ([p, s]: [buy_param, storage]): [
    list<operation>,
    storage
 ] => {
-   const [owner, token_id] = p;
+   const { owner, buyer, token_id } = p;
    let [currency, price] =
       match(Map.find_opt([owner, token_id], s.marketplace)) {
          when (Some(val)):
@@ -111,10 +111,9 @@ export const marketplace_buy = ([p, s]: [buy_param, storage]): [
          when (None()):
             failwith("Entry not found")
       };
-   let caller = Tezos.get_sender();
    // check if enough coins
 
-   let currency_balance = Storage.get_balance(s, caller, currency);
+   let currency_balance = Storage.get_balance(s, buyer, currency);
    if (currency_balance < price) {
       return failwith("Insufficient funds");
    };
@@ -128,11 +127,11 @@ export const marketplace_buy = ([p, s]: [buy_param, storage]): [
    // move the item from the owner to the buyer
 
    let new_ledger =
-      atomic_transfer_new_ledger(s.ledger, owner, caller, token_id, 1 as nat);
+      atomic_transfer_new_ledger(s.ledger, owner, buyer, token_id, 1 as nat);
    // move currency from the buyer to the owner
 
    new_ledger
-   = atomic_transfer_new_ledger(new_ledger, caller, owner, currency, price);
+   = atomic_transfer_new_ledger(new_ledger, buyer, owner, currency, price);
    let new_marketplace =
       Marketplace.remove_from_market([owner, token_id], s.marketplace);
    return [

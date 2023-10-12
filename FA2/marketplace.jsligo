@@ -1,5 +1,7 @@
 type owner = address;
 
+type sender = address;
+
 type token_id = nat;
 
 type currency = nat;
@@ -7,13 +9,8 @@ type currency = nat;
 type price = nat;
 
 export type add_to_market_param =
-@layout("tree")
-{
-    sender: address,
-    token_id: token_id,
-    currency: currency,
-    price: price
-};
+    @layout("tree")
+    { sender: address, token_id: token_id, currency: currency, price: price };
 
 // marketplace: a slot represents an item (with keeping track of the owner) and it's price in the specified soft currency
 // warning: using map for storage is not suitable for actual deployment,
@@ -23,7 +20,7 @@ export type t = map<[owner, token_id], [currency, price]>;
 
 export type remove_from_market_param = [owner, token_id];
 
-export type buy_param = [owner, token_id];
+export type buy_param = { owner: owner, buyer: sender, token_id: token_id };
 
 // check for the items is already on the market
 
