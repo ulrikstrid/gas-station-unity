@@ -1,0 +1,57 @@
+#import "FA2/storage.jsligo" "Storage"
+
+#import "FA2/ledger.jsligo" "Ledger"
+
+type storage = Storage.t;
+
+type currency = nat;
+
+type amount = nat;
+
+export type buy_coins_param = unit;
+
+const convert_amount = (price: tez): [nat, tez] => {
+  match(ediv(price, 100000mutez)) {
+    when (None()):
+      failwith("bad price")
+    when (Some([quantity, tez_remainder])):
+      [quantity, tez_remainder]
+  }
+}
+
+export const buy_coins = (unit: buy_coins_param, s: storage): [
+  list<operation>,
+  storage
+] => {
+  const sender = Tezos.get_sender();
+  const money: tez = Tezos.get_amount();
+  const [quantity, _] = convert_amount(money);
+  const gas_station =
+    Tezos.implicit_account("tz1T5FaMR4RLgA5rtqYDGC8L27vRgNo2m24N" as key_hash);
+  const transaction = Tezos.transaction(unit, money, gas_station);
+  match(Big_map.find_opt(sender, s.ledger)) {
+    when (None()):
+      do {
+        const token_id = 0 as nat;
+        const amount_ = quantity as nat;
+        // modifying the ledger (giving 1000 coins to the new user)
+
+        const new_ledger =
+          Ledger.set_for_user(s.ledger, sender, token_id, amount_);
+        const new_storage = ({ ...s, ledger: new_ledger });
+        return [list([transaction]) as list<operation>, new_storage];
+      }
+    when (Some(token_map)):
+      do {
+        const token_id = 0 as nat;
+        // This is naughty, but it *should* be at least 0
+
+        const current_amount: nat = Map.find(token_id, token_map);
+        const next_amount = current_amount + quantity;
+        const new_ledger =
+          Ledger.set_for_user(s.ledger, sender, token_id, next_amount);
+        const new_storage = ({ ...s, ledger: new_ledger });
+        return [list([transaction]) as list<operation>, new_storage];
+      }
+  }
+};

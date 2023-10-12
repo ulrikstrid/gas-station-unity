@@ -69,7 +69,7 @@
                   '';
 
                   scripts.set_meta.exec = ''
-                    octez-client transfer 0 from holder to KT1UMxkM324nuYnDssv3z7L3obk262xN9CRC --entrypoint "setMeta" --arg "$(build_parameter)"
+                    octez-client transfer 0 from holder to FA2 --arg "$(build_parameter)" --burn-cap 0.2225
                   '';
 
                   scripts.originate_contract.exec = ''

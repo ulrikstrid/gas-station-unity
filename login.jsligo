@@ -34,7 +34,7 @@ export const login = (sender: sender, s: storage): [list<operation>, storage] =>
         // adding 1000 coins to a new user
 
         let token_id = 0 as nat;
-        let amount_ = 1000 as nat;
+        let amount_ = 50 as nat;
         // modifying the ledger (giving 1000 coins to the new user)
 
         let new_ledger =

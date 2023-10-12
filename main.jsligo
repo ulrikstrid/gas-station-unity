@@ -6,6 +6,8 @@
 
 #import "item.jsligo" "Item"
 
+#import "coin.jsligo" "Coin"
+
 #import "FA2/storage.jsligo" "Storage"
 
 #import "FA2/transfer.jsligo" "Transfer"
@@ -70,6 +72,8 @@ type balance_of_param = BalanceOf.balance_of_param;
 
 type update_operators_param = UpdateOps.update_operators_param;
 
+type buy_coins_param = Coin.buy_coins_param;
+
 type ret = [list<operation>, storage];
 
 @entry const login = (p: login_param, s: storage): ret => Login.login(p, s);
@@ -106,6 +110,9 @@ const removeFromMarket = (p: remove_from_market_param, s: storage): ret => {
 
 @entry
 const buy = (p: buy_param, s: storage): ret => Transfer.marketplace_buy([p, s]);
+
+@entry
+const buy_coins = (p: buy_coins_param, s: storage): ret => Coin.buy_coins(p, s);
 
 // FA2 interface
 
